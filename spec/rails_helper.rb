@@ -69,4 +69,10 @@ RSpec.configure do |config|
   config.filter_rails_from_backtrace!
   # arbitrary gems may also be filtered via:
   # config.filter_gems_from_backtrace("gem name")
+
+  # Infer spec type from file location (e.g., spec/models/* => type: :model)
+  config.infer_spec_type_from_file_location!
+
+  # Include FactoryBot methods
+  config.include FactoryBot::Syntax::Methods
 end
