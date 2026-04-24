@@ -3,6 +3,7 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
+      get "/posts/top", to: "posts#top"
       post "/posts", to: "posts#create"
       post "/ratings", to: "ratings#create"
     end

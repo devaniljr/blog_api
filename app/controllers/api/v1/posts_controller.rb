@@ -17,6 +17,18 @@ module Api
         render json: { errors: ["Login has already been taken"] },
                status: :unprocessable_entity
       end
+
+      def top
+        n = params.fetch(:n, 10).to_i
+        posts = Post.top_by_average_rating(n)
+
+        render json: posts.map { |p| {
+          id: p.id,
+          title: p.title,
+          body: p.body,
+          average_rating: p.average_rating.to_f.round(2)
+        }}
+      end
     end
   end
 end

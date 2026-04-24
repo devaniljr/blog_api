@@ -57,4 +57,58 @@ RSpec.describe 'Api::V1::Posts', type: :request do
       end
     end
   end
+
+  describe 'GET /api/v1/posts/top' do
+    before do
+      rated_post_a = create(:post, title: 'Post A')
+      rated_post_b = create(:post, title: 'Post B')
+      rated_post_c = create(:post, title: 'Post C')
+
+      # Post A: ratings [3, 5] → média 4.0
+      create(:rating, post: rated_post_a, user: create(:user), value: 3)
+      create(:rating, post: rated_post_a, user: create(:user), value: 5)
+
+      # Post B: rating [2] → média 2.0
+      create(:rating, post: rated_post_b, user: create(:user), value: 2)
+
+      # Post C: rating [5] → média 5.0
+      create(:rating, post: rated_post_c, user: create(:user), value: 5)
+
+      # Post D: SEM ratings → não aparece no resultado
+      create(:post, title: 'Post D')
+    end
+
+    it 'returns posts ordered by average rating' do
+      get '/api/v1/posts/top'
+      json = JSON.parse(response.body)
+
+      expect(json[0]['title']).to eq('Post C')
+      expect(json[1]['title']).to eq('Post A')
+      expect(json[2]['title']).to eq('Post B')
+    end
+
+    it 'excludes posts without ratings' do
+      get '/api/v1/posts/top'
+      json = JSON.parse(response.body)
+
+      titles = json.map { |p| p['title'] }
+      expect(titles).not_to include('Post D')
+    end
+
+    it 'respects the n parameter' do
+      get '/api/v1/posts/top', params: { n: 2 }
+      json = JSON.parse(response.body)
+
+      expect(json.size).to eq(2)
+    end
+
+    it 'returns id, title, body and average_rating' do
+      get '/api/v1/posts/top'
+      json = JSON.parse(response.body)
+
+      expect(json[0].keys).to contain_exactly(
+        'id', 'title', 'body', 'average_rating'
+      )
+    end
+  end
 end
