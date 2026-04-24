@@ -6,6 +6,7 @@ Rails.application.routes.draw do
       get "/posts/top", to: "posts#top"
       post "/posts", to: "posts#create"
       post "/ratings", to: "ratings#create"
+      get "/ips", to: "ips#index"
     end
   end
 end
