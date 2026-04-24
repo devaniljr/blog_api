@@ -4,6 +4,7 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       post "/posts", to: "posts#create"
+      post "/ratings", to: "ratings#create"
     end
   end
 end
