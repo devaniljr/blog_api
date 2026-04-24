@@ -1,8 +1,8 @@
 FactoryBot.define do
   factory :post do
-    user { nil }
-    title { "MyString" }
-    body { "MyText" }
-    ip { "MyString" }
+    association :user
+    title { "My title" }
+    body { "My body text" }
+    ip { "192.168.1.1" }
   end
 end
