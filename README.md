@@ -1,6 +1,17 @@
-# Posts API
+# Blog API
 
-API for creating posts, rating them, and analyzing IP usage patterns.
+REST API for creating posts, rating them, and analyzing IP usage patterns.
+
+## Tech Stack
+
+- Ruby 4.0.1
+- Rails 8.1.3
+- PostgreSQL 16
+
+## Prerequisites
+
+- Ruby 4.0+ (`asdf`, `rbenv`, or similar)
+- PostgreSQL running locally
 
 ## Setup
 
@@ -9,7 +20,7 @@ bundle install
 rails db:create db:migrate
 ```
 
-## Run
+## Running
 
 ```bash
 rails server
@@ -17,19 +28,19 @@ rails server
 
 ## Seed
 
-Generates 200k posts, 100 users, and 150k ratings using the API controllers via Rack.
+Generates 200k posts, 100 users, and 150k ratings through the API.
 
 ```bash
 rails db:seed
 ```
 
-A curl-based alternative is in `lib/scripts/seed.sh`.
+A curl-based alternative is available in `lib/scripts/seed.sh`.
 
 ## Endpoints
 
 ### POST /api/v1/posts
 
-Creates a post. If the user doesn't exist, it's created automatically.
+Creates a post. If the user does not exist, it is created automatically.
 
 ```json
 { "title": "Post title", "body": "Content", "login": "username", "ip": "1.2.3.4" }
@@ -39,7 +50,7 @@ Returns the post and user on success (201), or validation errors (422).
 
 ### POST /api/v1/ratings
 
-Rates a post. Each user can rate a post only once.
+Rates a post. Each user can only rate a post once.
 
 ```json
 { "post_id": 1, "user_id": 5, "value": 4 }
@@ -55,11 +66,11 @@ Returns the top N posts by average rating. Default is 10.
 GET /api/v1/posts/top?n=5
 ```
 
-Posts without ratings are not included.
+Posts without ratings are excluded.
 
 ### GET /api/v1/ips
 
-Lists all IPs and the logins of authors who posted from each one.
+Lists IPs and the logins of authors who posted from each one.
 
 ```json
 [{ "ip": "1.2.3.4", "logins": ["user_a", "user_b"] }]
@@ -75,4 +86,22 @@ bundle exec rspec
 
 ```bash
 bundle exec rubocop
+```
+
+## Project Structure
+
+```
+app/
+├── controllers/api/v1/     ← API endpoints
+├── models/                 ← User, Post, Rating
+└── services/               ← PostCreationService, RatingCreationService
+spec/
+├── models/
+├── requests/
+└── services/
+db/
+├── migrate/
+└── seeds.rb
+lib/scripts/
+└── seed.sh                 ← alternative seed via curl
 ```
