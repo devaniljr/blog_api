@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe Post, type: :model do
@@ -37,7 +39,7 @@ RSpec.describe Post, type: :model do
     it 'destroys associated ratings when post is destroyed' do
       post = create(:post)
       create(:rating, post: post, user: create(:user))
-      expect { post.destroy }.to change { Rating.count }.by(-1)
+      expect { post.destroy }.to change(Rating, :count).by(-1)
     end
   end
 end

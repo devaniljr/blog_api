@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'Api::V1::Ratings', type: :request do
@@ -10,7 +12,7 @@ RSpec.describe 'Api::V1::Ratings', type: :request do
       end
 
       it 'creates a new rating' do
-        expect { post '/api/v1/ratings', params: payload }.to change { Rating.count }.by(1)
+        expect { post '/api/v1/ratings', params: payload }.to change(Rating, :count).by(1)
       end
 
       it 'returns status 201' do
@@ -21,7 +23,7 @@ RSpec.describe 'Api::V1::Ratings', type: :request do
       it 'returns the average rating of the post' do
         create(:rating, post: rated_post, user: create(:user), value: 2)
         post '/api/v1/ratings', params: payload
-        json = JSON.parse(response.body)
+        json = response.parsed_body
 
         # existing: 2, new: 4 → average: 3.0
         expect(json['average_rating']).to eq(3.0)
@@ -36,7 +38,7 @@ RSpec.describe 'Api::V1::Ratings', type: :request do
       end
 
       it 'does not create a rating' do
-        expect { post '/api/v1/ratings', params: payload }.not_to change { Rating.count }
+        expect { post '/api/v1/ratings', params: payload }.not_to(change(Rating, :count))
       end
 
       it 'returns status 422' do
@@ -46,7 +48,7 @@ RSpec.describe 'Api::V1::Ratings', type: :request do
 
       it 'returns validation errors' do
         post '/api/v1/ratings', params: payload
-        json = JSON.parse(response.body)
+        json = response.parsed_body
         expect(json['errors']).to include('Value is not included in the list')
       end
     end
@@ -59,7 +61,7 @@ RSpec.describe 'Api::V1::Ratings', type: :request do
 
       it 'does not create a duplicate rating' do
         payload = { post_id: rated_post.id, user_id: user.id, value: 5 }
-        expect { post '/api/v1/ratings', params: payload }.not_to change { Rating.count }
+        expect { post '/api/v1/ratings', params: payload }.not_to(change(Rating, :count))
       end
 
       it 'returns status 422' do
@@ -71,7 +73,7 @@ RSpec.describe 'Api::V1::Ratings', type: :request do
       it 'returns an error message' do
         payload = { post_id: rated_post.id, user_id: user.id, value: 5 }
         post '/api/v1/ratings', params: payload
-        json = JSON.parse(response.body)
+        json = response.parsed_body
         expect(json['errors']).to include('User has already been taken')
       end
     end

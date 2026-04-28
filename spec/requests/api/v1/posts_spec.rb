@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'Api::V1::Posts', type: :request do
@@ -8,11 +10,11 @@ RSpec.describe 'Api::V1::Posts', type: :request do
       end
 
       it 'creates a new post' do
-        expect { post '/api/v1/posts', params: params }.to change { Post.count }.by(1)
+        expect { post '/api/v1/posts', params: params }.to change(Post, :count).by(1)
       end
 
       it 'creates a new user when login does not exist' do
-        expect { post '/api/v1/posts', params: params }.to change { User.count }.by(1)
+        expect { post '/api/v1/posts', params: params }.to change(User, :count).by(1)
       end
 
       it 'returns status 201' do
@@ -22,7 +24,7 @@ RSpec.describe 'Api::V1::Posts', type: :request do
 
       it 'returns the post and user in the response' do
         post '/api/v1/posts', params: params
-        json = JSON.parse(response.body)
+        json = response.parsed_body
 
         expect(json['post']['title']).to eq('My post')
         expect(json['post']['body']).to eq('My body')
@@ -32,7 +34,7 @@ RSpec.describe 'Api::V1::Posts', type: :request do
 
       it 'reuses existing user when login already exists' do
         create(:user, login: 'joao')
-        expect { post '/api/v1/posts', params: params }.to change { User.count }.by(0)
+        expect { post '/api/v1/posts', params: params }.not_to(change(User, :count))
       end
     end
 
@@ -42,7 +44,7 @@ RSpec.describe 'Api::V1::Posts', type: :request do
       end
 
       it 'does not create a post' do
-        expect { post '/api/v1/posts', params: params }.not_to change { Post.count }
+        expect { post '/api/v1/posts', params: params }.not_to(change(Post, :count))
       end
 
       it 'returns status 422' do
@@ -52,7 +54,7 @@ RSpec.describe 'Api::V1::Posts', type: :request do
 
       it 'returns validation errors' do
         post '/api/v1/posts', params: params
-        json = JSON.parse(response.body)
+        json = response.parsed_body
         expect(json['errors']).to include("Title can't be blank")
       end
     end
@@ -80,7 +82,7 @@ RSpec.describe 'Api::V1::Posts', type: :request do
 
     it 'returns posts ordered by average rating' do
       get '/api/v1/posts/top'
-      json = JSON.parse(response.body)
+      json = response.parsed_body
 
       expect(json[0]['title']).to eq('Post C')
       expect(json[1]['title']).to eq('Post A')
@@ -89,22 +91,22 @@ RSpec.describe 'Api::V1::Posts', type: :request do
 
     it 'excludes posts without ratings' do
       get '/api/v1/posts/top'
-      json = JSON.parse(response.body)
+      json = response.parsed_body
 
-      titles = json.map { |p| p['title'] }
+      titles = json.pluck('title')
       expect(titles).not_to include('Post D')
     end
 
     it 'respects the n parameter' do
       get '/api/v1/posts/top', params: { n: 2 }
-      json = JSON.parse(response.body)
+      json = response.parsed_body
 
       expect(json.size).to eq(2)
     end
 
     it 'returns id, title, body and average_rating' do
       get '/api/v1/posts/top'
-      json = JSON.parse(response.body)
+      json = response.parsed_body
 
       expect(json[0].keys).to contain_exactly(
         'id', 'title', 'body', 'average_rating'

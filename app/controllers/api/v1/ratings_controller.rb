@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V1
     class RatingsController < ApplicationController
@@ -9,11 +11,11 @@ module Api
           render json: { rating: rating, average_rating: average }, status: :created
         else
           render json: { errors: rating.errors.full_messages },
-                 status: :unprocessable_entity
+                 status: :unprocessable_content
         end
       rescue ActiveRecord::RecordNotUnique
         render json: { errors: ['You have already rated this post'] },
-               status: :unprocessable_entity
+               status: :unprocessable_content
       end
 
       private

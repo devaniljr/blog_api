@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Api
   module V1
     class PostsController < ApplicationController
@@ -12,22 +14,24 @@ module Api
         end
       rescue ActiveRecord::RecordInvalid => e
         render json: { errors: e.record.errors.full_messages },
-               status: :unprocessable_entity
+               status: :unprocessable_content
       rescue ActiveRecord::RecordNotUnique
-        render json: { errors: ["Login has already been taken"] },
-               status: :unprocessable_entity
+        render json: { errors: ['Login has already been taken'] },
+               status: :unprocessable_content
       end
 
       def top
         n = params.fetch(:n, 10).to_i
         posts = Post.top_by_average_rating(n)
 
-        render json: posts.map { |p| {
-          id: p.id,
-          title: p.title,
-          body: p.body,
-          average_rating: p.average_rating.to_f.round(2)
-        }}
+        render json: posts.map { |p|
+          {
+            id: p.id,
+            title: p.title,
+            body: p.body,
+            average_rating: p.average_rating.to_f.round(2)
+          }
+        }
       end
     end
   end

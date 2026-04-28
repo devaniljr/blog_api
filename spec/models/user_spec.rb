@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
@@ -24,14 +26,14 @@ RSpec.describe User, type: :model do
     it 'destroys associated posts when user is destroyed' do
       user = create(:user)
       create(:post, user: user)
-      expect { user.destroy }.to change { Post.count }.by(-1)
+      expect { user.destroy }.to change(Post, :count).by(-1)
     end
 
     it 'destroys associated ratings when user is destroyed' do
       user = create(:user)
       post = create(:post, user: user)
       create(:rating, post: post, user: user)
-      expect { user.destroy }.to change { Rating.count }.by(-1)
+      expect { user.destroy }.to change(Rating, :count).by(-1)
     end
   end
 end

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rails_helper'
 
 RSpec.describe 'Api::V1::Ips', type: :request do
@@ -25,7 +27,7 @@ RSpec.describe 'Api::V1::Ips', type: :request do
 
     it 'groups logins by ip' do
       get '/api/v1/ips'
-      json = JSON.parse(response.body)
+      json = response.parsed_body
 
       ip_192 = json.find { |entry| entry['ip'] == '192.168.1.1' }
       expect(ip_192['logins']).to contain_exactly('alice', 'bob')
@@ -33,7 +35,7 @@ RSpec.describe 'Api::V1::Ips', type: :request do
 
     it 'includes all distinct logins for shared ips' do
       get '/api/v1/ips'
-      json = JSON.parse(response.body)
+      json = response.parsed_body
 
       ip_10 = json.find { |entry| entry['ip'] == '10.0.0.5' }
       # charlie e alice postaram desse IP
@@ -42,7 +44,7 @@ RSpec.describe 'Api::V1::Ips', type: :request do
 
     it 'returns an array with ip and logins fields' do
       get '/api/v1/ips'
-      json = JSON.parse(response.body)
+      json = response.parsed_body
 
       expect(json.first.keys).to contain_exactly('ip', 'logins')
     end
