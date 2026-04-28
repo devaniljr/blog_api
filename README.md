@@ -1,24 +1,78 @@
-# README
+# Posts API
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+API for creating posts, rating them, and analyzing IP usage patterns.
 
-Things you may want to cover:
+## Setup
 
-* Ruby version
+```bash
+bundle install
+rails db:create db:migrate
+```
 
-* System dependencies
+## Run
 
-* Configuration
+```bash
+rails server
+```
 
-* Database creation
+## Seed
 
-* Database initialization
+Generates 200k posts, 100 users, and 150k ratings using the API controllers via Rack.
 
-* How to run the test suite
+```bash
+rails db:seed
+```
 
-* Services (job queues, cache servers, search engines, etc.)
+A curl-based alternative is in `lib/scripts/seed.sh`.
 
-* Deployment instructions
+## Endpoints
 
-* ...
+### POST /api/v1/posts
+
+Creates a post. If the user doesn't exist, it's created automatically.
+
+```json
+{ "title": "Post title", "body": "Content", "login": "username", "ip": "1.2.3.4" }
+```
+
+Returns the post and user on success (201), or validation errors (422).
+
+### POST /api/v1/ratings
+
+Rates a post. Each user can rate a post only once.
+
+```json
+{ "post_id": 1, "user_id": 5, "value": 4 }
+```
+
+Returns the rating and the post's average rating.
+
+### GET /api/v1/posts/top
+
+Returns the top N posts by average rating. Default is 10.
+
+```
+GET /api/v1/posts/top?n=5
+```
+
+Posts without ratings are not included.
+
+### GET /api/v1/ips
+
+Lists all IPs and the logins of authors who posted from each one.
+
+```json
+[{ "ip": "1.2.3.4", "logins": ["user_a", "user_b"] }]
+```
+
+## Testing
+
+```bash
+bundle exec rspec
+```
+
+## Linting
+
+```bash
+bundle exec rubocop
+```
