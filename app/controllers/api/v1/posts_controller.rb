@@ -4,20 +4,13 @@ module Api
   module V1
     class PostsController < ApplicationController
       def create
-        ActiveRecord::Base.transaction do
-          user = User.find_or_create_by!(login: params[:login])
-          post = user.posts.build(title: params[:title],
-                                  body: params[:body],
-                                  ip: params[:ip])
-          post.save!
-          render json: { post: post, user: user }, status: :created
+        result = PostCreationService.call(params)
+
+        if result.success?
+          render json: { post: result.data[:post], user: result.data[:user] }, status: :created
+        else
+          render json: { errors: result.error }, status: :unprocessable_content
         end
-      rescue ActiveRecord::RecordInvalid => e
-        render json: { errors: e.record.errors.full_messages },
-               status: :unprocessable_content
-      rescue ActiveRecord::RecordNotUnique
-        render json: { errors: ['Login has already been taken'] },
-               status: :unprocessable_content
       end
 
       def top

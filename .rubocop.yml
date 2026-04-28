@@ -29,6 +29,9 @@ Layout/LineLength:
 Metrics/AbcSize:
   Max: 20
 
+Lint/MissingSuper:
+  Enabled: false
+
 RSpec/MultipleExpectations:
   Max: 4
 
