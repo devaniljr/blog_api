@@ -43,7 +43,7 @@ RSpec.describe 'Api::V1::Ratings', type: :request do
 
       it 'returns status 422' do
         post '/api/v1/ratings', params: payload
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns validation errors' do
@@ -67,7 +67,7 @@ RSpec.describe 'Api::V1::Ratings', type: :request do
       it 'returns status 422' do
         payload = { post_id: rated_post.id, user_id: user.id, value: 5 }
         post '/api/v1/ratings', params: payload
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns an error message' do

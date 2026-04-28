@@ -49,7 +49,7 @@ RSpec.describe 'Api::V1::Posts', type: :request do
 
       it 'returns status 422' do
         post '/api/v1/posts', params: params
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it 'returns validation errors' do
